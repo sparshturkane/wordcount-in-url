@@ -1,7 +1,7 @@
 {
-  "name": "anatta",
+  "name": "wordcount-in-url",
   "version": "1.0.0",
-  "description": "test",
+  "description": "Find a count of word in a website url",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

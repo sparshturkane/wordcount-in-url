@@ -1,4 +1,5 @@
 import axios from "axios";
+import fs from "fs";
 
 function fetchUrl(params: string): string {
     let url: string = params.split('=')[1];
@@ -12,8 +13,13 @@ function fetchWords(params: string): string[] {
 
 async function callAPI(url: string) {
     try {
-        const response = await axios.get(url)
-        console.log(response)
+        const response = await axios({
+            method: 'get',
+            url: url,
+            responseType: 'stream'
+        })
+        response.data.pipe(fs.createWriteStream("temp/website.html"));
+
     } catch (error) {
         console.error(error)
     }

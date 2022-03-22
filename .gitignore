@@ -3,3 +3,9 @@ node_modules/
 
 .vscode
 dist/
+
+# exclude everything
+temp/*
+
+# exception to the rule
+!temp/.gitkeep 
