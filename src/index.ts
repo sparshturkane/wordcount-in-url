@@ -36,7 +36,20 @@ function readFile(word: string[]): void {
     let growthGounter = 0;
     let sustainableCounter = 0;
     let annataCounter = 0;
+
+    let finalObject: { [x: string]: number; } = {};
+    for (let i = 0; i < word.length; i++) {
+        finalObject[word[i]] = 0
+    }
+
+    console.log();
+
     rl.on('line', (line) => {
+
+        for (let i = 0; i < word.length; i++) {
+            finalObject[word[i]] = finalObject[word[i]] + (line.toLowerCase().match(new RegExp(word[i].toLowerCase(), "g")) || []).length
+        }
+
         if (line) {
             growthGounter = growthGounter + (line.toLowerCase().match(new RegExp("growth", "g")) || []).length
             sustainableCounter = sustainableCounter + (line.toLowerCase().match(new RegExp("sustainable", "g")) || []).length
@@ -50,6 +63,13 @@ function readFile(word: string[]): void {
         console.log(sustainableCounter);
         console.log(annataCounter);
 
+        console.log(finalObject);
+
+        for (const finalValue in finalObject) {
+            console.log(finalValue + ": " + finalObject[finalValue]);
+
+        }
+
     })
 }
 
@@ -57,7 +77,9 @@ async function init(): Promise<any> {
     const url: string = fetchUrl(process.argv[2]);
     const word: string[] = fetchWords(process.argv[3]);
 
-    console.log(await callAPI(url));
+    console.log(word);
+
+    // console.log(await callAPI(url));
     console.log(readFile(word));
 
 }
