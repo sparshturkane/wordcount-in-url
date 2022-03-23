@@ -1,5 +1,6 @@
 import axios from "axios";
 import fs from "fs";
+import readline from "readline";
 
 function fetchUrl(params: string): string {
     let url: string = params.split('=')[1];
@@ -12,17 +13,44 @@ function fetchWords(params: string): string[] {
 }
 
 async function callAPI(url: string) {
-    try {
+    return new Promise(async (fulfill, reject) => {
+
         const response = await axios({
             method: 'get',
             url: url,
             responseType: 'stream'
         })
-        response.data.pipe(fs.createWriteStream("temp/website.html"));
+        let reponsePipe = await response.data.pipe(fs.createWriteStream("temp/website.txt"));
+        reponsePipe.on('finish', fulfill)
+        reponsePipe.on('error', reject)
+    });
+}
 
-    } catch (error) {
-        console.error(error)
-    }
+function readFile(word: string[]): void {
+    const rl = readline.createInterface({
+        input: fs.createReadStream('temp/website.txt'),
+        output: process.stdout,
+        terminal: false
+    })
+
+    let growthGounter = 0;
+    let sustainableCounter = 0;
+    let annataCounter = 0;
+    rl.on('line', (line) => {
+        if (line) {
+            growthGounter = growthGounter + (line.toLowerCase().match(new RegExp("growth", "g")) || []).length
+            sustainableCounter = sustainableCounter + (line.toLowerCase().match(new RegExp("sustainable", "g")) || []).length
+            annataCounter = annataCounter + (line.toLowerCase().match(new RegExp("anatta", "g")) || []).length
+        }
+    })
+
+    rl.on('close', () => {
+        console.log('Done!');
+        console.log(growthGounter);
+        console.log(sustainableCounter);
+        console.log(annataCounter);
+
+    })
 }
 
 async function init(): Promise<any> {
@@ -30,6 +58,8 @@ async function init(): Promise<any> {
     const word: string[] = fetchWords(process.argv[3]);
 
     console.log(await callAPI(url));
+    console.log(readFile(word));
+
 }
 
 init()
